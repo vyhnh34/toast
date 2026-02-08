@@ -107,8 +107,8 @@ async def entrypoint(ctx: JobContext):
     assistant = Assistant()
 
     session = AgentSession(
-        stt="assemblyai/universal-streaming:en",
-        llm="openai/gpt-4o-mini",
+        stt="deepgram/nova-2/en-US",
+        llm="anthropic/claude-3-5-sonnet-latest",
         tts=cartesia.TTS(
             model="sonic-2",
             voice=DEFAULT_VOICE_ID,
@@ -120,6 +120,12 @@ async def entrypoint(ctx: JobContext):
 
     assistant._agent_session = session
 
+    print(f"Starting job {ctx.job.id} for room {ctx.room.name}")
+    logger.info(f"Starting job {ctx.job.id} for room {ctx.room.name}")
+
+    await ctx.connect()
+    print("Connected to room")
+
     await session.start(
         agent=assistant,
         room=ctx.room,
@@ -127,9 +133,9 @@ async def entrypoint(ctx: JobContext):
             noise_cancellation=noise_cancellation.BVC(),
         ),
     )
+    print("Session started")
 
-    await ctx.connect()
-
+    print("Generating initial greeting...")
     await session.generate_reply(
         instructions=(
             "Introduce yourself as Toast, a User Testing Simulator! "
@@ -140,6 +146,7 @@ async def entrypoint(ctx: JobContext):
         ),
         allow_interruptions=False,
     )
+    print("Initial greeting generated")
 
     background_tasks = set()
 

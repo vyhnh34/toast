@@ -12,6 +12,10 @@ dependencies = [
     "livekit-agents[turn-detector,silero]~=1.2",
     "livekit-plugins-noise-cancellation~=0.2",
     "livekit-plugins-cartesia~=1.2",
+    "livekit-plugins-openai~=1.2",
+    "livekit-plugins-assemblyai~=1.2",
+    "livekit-plugins-deepgram~=1.2",
+    "livekit-plugins-anthropic~=1.2",
     "notion-client>=2.7.0",
     "python-dotenv",
 ]
