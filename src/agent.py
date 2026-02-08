@@ -23,16 +23,17 @@ DEFAULT_VOICE_ID = "9626c31c-bec5-4cca-baa8-f8ba9e84c8bc"
 logger = logging.getLogger("livekit.agents")
 load_dotenv(".env.local")
 
+
 class Assistant(Agent):
     def __init__(self, persona_name="Helpful Assistant") -> None:
         self.current_persona = get_persona(persona_name)
 
         if self.current_persona and self.current_persona["name"] != "Helpful Assistant":
-            instructions = f"""You are roleplaying as {self.current_persona['name']}.
+            instructions = f"""You are roleplaying as {self.current_persona["name"]}.
 
-BACKSTORY: {self.current_persona['backstory']}
+BACKSTORY: {self.current_persona["backstory"]}
 
-ROAST STYLE: {self.current_persona['roast_style']}
+ROAST STYLE: {self.current_persona["roast_style"]}
 
 Stay in character at all times. React to the user's product ideas exactly as this persona would.
 Be brutally honest and entertaining. Your responses should be conversational and natural.
@@ -58,11 +59,11 @@ Your responses are concise and conversational."""
             self.current_persona = new_persona
 
             if new_persona["name"] != "Helpful Assistant":
-                new_instructions = f"""You are now roleplaying as {new_persona['name']}.
+                new_instructions = f"""You are now roleplaying as {new_persona["name"]}.
 
-BACKSTORY: {new_persona['backstory']}
+BACKSTORY: {new_persona["backstory"]}
 
-ROAST STYLE: {new_persona['roast_style']}
+ROAST STYLE: {new_persona["roast_style"]}
 
 Stay in character. React to product ideas as this persona would.
 Be brutally honest and entertaining. Keep responses conversational."""
@@ -81,20 +82,26 @@ Be brutally honest and entertaining. Keep responses conversational."""
                     # Update the voice on the existing TTS instance via session.tts property
                     tts_instance = self._agent_session.tts
                     if tts_instance:
-                        logger.info(f"TTS instance found: {tts_instance}, updating voice...")
+                        logger.info(
+                            f"TTS instance found: {tts_instance}, updating voice..."
+                        )
                         tts_instance.update_options(voice=voice_id)
-                        logger.info(f"Successfully switched voice to {voice_id} for {new_persona['name']}")
+                        logger.info(
+                            f"Successfully switched voice to {voice_id} for {new_persona['name']}"
+                        )
                     else:
                         logger.error("No TTS instance available on session!")
 
                 except Exception as e:
                     logger.error(f"Failed to update voice: {e}")
                     import traceback
+
                     traceback.print_exc()
 
             return new_persona
 
         return None
+
 
 async def entrypoint(ctx: JobContext):
     assistant = Assistant()
@@ -209,10 +216,13 @@ async def entrypoint(ctx: JobContext):
         except Exception as e:
             print(f"[ERROR] Exception in _handle_user_speech: {e}")
             import traceback
+
             traceback.print_exc()
+
 
 def prewarm(proc: JobProcess):
     proc.userdata["vad"] = silero.VAD.load()
+
 
 if __name__ == "__main__":
     cli.run_app(WorkerOptions(entrypoint_fnc=entrypoint, prewarm_fnc=prewarm))
