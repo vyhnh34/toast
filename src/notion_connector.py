@@ -1,4 +1,5 @@
 import os
+
 from dotenv import load_dotenv
 from notion_client import Client
 
@@ -19,11 +20,11 @@ def get_persona(name):
             query=name,
             filter={"property": "object", "value": "page"}
         )
-        
+
         if search_result.get('results'):
             result = search_result['results'][0]
             properties = result.get('properties', {})
-            
+
             # Helper to safely extract text content
             def get_text(prop_name, prop_type="rich_text"):
                 prop = properties.get(prop_name, {})
@@ -31,11 +32,11 @@ def get_persona(name):
                     items = prop.get("title", [])
                 else:
                     items = prop.get("rich_text", [])
-                
+
                 if items:
                     return items[0].get("text", {}).get("content", "")
                 return ""
-            
+
             return {
                 "name": get_text("Name", "title"),
                 "backstory": get_text("Backstory"),
@@ -43,7 +44,7 @@ def get_persona(name):
                 "voice_vibe": get_text("Voice Vibe"),
                 "voice_id": get_text("Voice ID")
             }
-        
+
         # Default if not found
         return {
             "name": "Helpful Assistant",
@@ -64,7 +65,7 @@ def list_all_personas():
         search_result = notion.search(
             filter={"property": "object", "value": "page"}
         )
-        
+
         personas = []
         for result in search_result.get('results', []):
             # Check if it's from our database
@@ -76,7 +77,7 @@ def list_all_personas():
                     name = title_prop[0].get('text', {}).get('content', '')
                     if name:
                         personas.append(name)
-        
+
         return personas
     except Exception as e:
         print(f"Error listing personas: {e}")
