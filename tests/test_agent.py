@@ -1,10 +1,10 @@
+import os
+
 import pytest
 from livekit.agents import AgentSession, inference, llm
 
 from agent import Assistant
 
-
-import os
 
 def _llm() -> llm.LLM:
     return inference.LLM(model="openai/gpt-4o-mini")
