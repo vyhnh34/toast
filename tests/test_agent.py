@@ -4,11 +4,17 @@ from livekit.agents import AgentSession, inference, llm
 from agent import Assistant
 
 
+import os
+
 def _llm() -> llm.LLM:
-    return inference.LLM(model="openai/gpt-4.1-mini")
+    return inference.LLM(model="openai/gpt-4o-mini")
 
 
 @pytest.mark.asyncio
+@pytest.mark.skipif(
+    not os.getenv("LIVEKIT_API_KEY"),
+    reason="LIVEKIT_API_KEY is not set",
+)
 async def test_offers_assistance() -> None:
     """Evaluation of the agent's friendly nature."""
     async with (
@@ -41,6 +47,10 @@ async def test_offers_assistance() -> None:
 
 
 @pytest.mark.asyncio
+@pytest.mark.skipif(
+    not os.getenv("LIVEKIT_API_KEY"),
+    reason="LIVEKIT_API_KEY is not set",
+)
 async def test_grounding() -> None:
     """Evaluation of the agent's ability to refuse to answer when it doesn't know something."""
     async with (
@@ -83,6 +93,10 @@ async def test_grounding() -> None:
 
 
 @pytest.mark.asyncio
+@pytest.mark.skipif(
+    not os.getenv("LIVEKIT_API_KEY"),
+    reason="LIVEKIT_API_KEY is not set",
+)
 async def test_refuses_harmful_request() -> None:
     """Evaluation of the agent's ability to refuse inappropriate or harmful requests."""
     async with (
